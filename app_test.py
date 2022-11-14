@@ -133,15 +133,20 @@ def pulse_record_test():
     trigger_delay=initialization[13] #trigger delay S
     pulse_ID=initialization[9] #pulse ID
     pulse_IR=initialization[10] #instrted reactivity
+    measurement_channel=initialization[2] #redpitaya measurement channel
     
     #ND filter selection storage
     ND_filter="noND"
+    ND_filter_T=100
     if initialization[6]=="1":
         ND_filter = "ND06A"
+        ND_filter_T = 25
     elif initialization[7]=="1":
         ND_filter = "ND10A"
+        ND_filter_T = 10
     elif initialization[8]=="1":
         ND_filter = "ND20A"
+        ND_filter_T = 1
     
     #print(ND_filter)
     
@@ -150,7 +155,7 @@ def pulse_record_test():
     date_string = datenow.strftime('%d_%m_%Y')
     fileNameP="recorded_pulses_"+date_string+".csv"
     fileP = open(fileNameP, "a")
-    fileP.write(pulse_ID+","+pulse_IR+","+decimation+","+trigger_level+","+trigger_delay+","+ND_filter)
+    fileP.write(pulse_ID+","+pulse_IR+","+decimation+","+trigger_level+","+trigger_delay+","+ND_filter+","+ND_filter_T)
     fileP.close()
     
     #file creation
@@ -194,17 +199,17 @@ def pulse_record_test():
 
     #rp_s.tx_txt('ACQ:DATA:FORMAT ASCII')
     #rp_s.tx_txt('ACQ:DATA:UNITS VOLTS')
-    rp_s.tx_txt('ACQ:DEC 65536')
-    rp_s.tx_txt('ACQ:TRIG:LEV 0.015') #trigger in Volts usual: 0.007
-    rp_s.tx_txt('ACQ:TRIG CH1_PE')
-    rp_s.tx_txt('ACQ:TRIG:DLY 7000') #trigger delay
+    rp_s.tx_txt('ACQ:DEC '+decimation)
+    rp_s.tx_txt('ACQ:TRIG:LEV '+trigger_level) #trigger in Volts usual: 0.007
+    rp_s.tx_txt('ACQ:TRIG '+measurement_channel)
+    rp_s.tx_txt('ACQ:TRIG:DLY '+trigger_delay) #trigger delay
 
     print('Initialization')
 
 
     rp_s.tx_txt('ACQ:START')
 
-    time.sleep(9)  #flushing the buffer (waiting for new measurements)
+    time.sleep(stop_time+0.5)  #flushing the buffer (waiting for new measurements)
 
     print('Ready')
 
@@ -241,6 +246,7 @@ def pulse_record_test():
     dt=stop_time/buffer_length
     fwhm=results_half[0]*dt
     print("FWHM: "+str(fwhm)+" s")
+    
     #integral
     a=1000
     RE=np.trapz(signal[(maximumind-a):(maximumind+a)],dx=dt)
@@ -249,11 +255,13 @@ def pulse_record_test():
     fileP = open(fileNameP, "a")
     fileP.write(","+str(maximum)+","+str(fwhm)+","+str(RE)+"\n")
     fileP.close()
+    
     #--------------------------------------------------------------------------------------------------------------------------------------
     ## New window with results
     #--------------------------------------------------------------------------------------------------------------------------------------
     window = Toplevel(root)
     window.title('Pulse number: '+numberOfPulses)
+    window.minsize(500, 500)
     # the figure that will contain the plot
     fig = Figure(figsize = (6, 4),
                  dpi = 100)
@@ -361,6 +369,8 @@ def pulse_record():
     #--------------------------------------------------------------------------------------------------------------------------------------
     window = Toplevel(root)
     window.title('Pulse number: '+numberOfPulses)
+    window.geometry('600x'+str(root.winfo_height())+'+'+str(root.winfo_width()+10)+'+30')
+    #window.minsize(500, 500)
     # the figure that will contain the plot
     fig = Figure(figsize = (6, 4),
                  dpi = 100)
@@ -404,7 +414,8 @@ root = Tk()
 # root window title and dimension
 root.title("Cherenkov pulse recorder")
 # Set geometry(widthxheight)
-root.geometry('810x600')
+#root.geometry('1150x800')
+root.minsize(500, 500)
 
 # adding menu bar in root window
 # new item in menu bar labelled as 'New'
@@ -435,35 +446,35 @@ label.grid(row = 0, column = 0, pady = 2)
 label1 =Label(root, text="IP adress:", font=NORM_FONT)
 label1.grid(row = 1, column = 0)
 var1 = StringVar()
-IP = Entry(root,textvariable=var1)
+IP = Entry(root,textvariable=var1, font=NORM_FONT)
 IP.grid(row = 1, column = 1)
 IP.insert(0,initialization[0])
         #Measuremnt position
 label2 =Label(root, text="Position:", font=NORM_FONT)
 label2.grid(row = 2, column = 0)
 var2 = StringVar()
-P = Entry(root,textvariable=var2)
+P = Entry(root,textvariable=var2, font=NORM_FONT)
 P.grid(row = 2, column = 1)
 P.insert(0,initialization[1])
         #Water volume adress entry
 label3 =Label(root, text="Water volume [dl]:", font=NORM_FONT)
 label3.grid(row = 4, column = 0)
 var3 = StringVar()
-V = Entry(root,textvariable=var3)
+V = Entry(root,textvariable=var3, font=NORM_FONT)
 V.grid(row = 4, column = 1)
 V.insert(0,initialization[3])
         #Detector height
 label4 = Label(root, text="Detector height [m]:", font=NORM_FONT)
 label4.grid(row = 5, column = 0)
 var4 = StringVar()
-h = Entry(root,textvariable=var4)
+h = Entry(root,textvariable=var4, font=NORM_FONT)
 h.grid(row = 5, column = 1)
 h.insert(0,initialization[4])
         #SiPM BIAS voltage
 label5 = Label(root, text="SiPM BIAS [V]:", font=NORM_FONT)
 label5.grid(row = 6, column = 0)
 var5 = StringVar()
-B = Entry(root,textvariable=var5)
+B = Entry(root,textvariable=var5, font=NORM_FONT)
 B.grid(row = 6, column = 1)
 B.insert(0,initialization[5])
 
@@ -474,20 +485,20 @@ label.grid(row = 8, column = 0, pady = 2)
 label6 = Label(root, text="ND filter:", font=NORM_FONT)
 label6.grid(row = 11, column = 0,rowspan = 3)
 var6 = IntVar()
-ND1 = Checkbutton(root, text='ND06A',variable=var6, onvalue=1, offvalue=0)
+ND1 = Checkbutton(root, text='ND06A',variable=var6, onvalue=1, offvalue=0, font=NORM_FONT)
 ND1.grid(row = 11, column = 1)
 var7 = IntVar()
-ND2 = Checkbutton(root, text='ND10A',variable=var7, onvalue=1, offvalue=0)
+ND2 = Checkbutton(root, text='ND10A',variable=var7, onvalue=1, offvalue=0, font=NORM_FONT)
 ND2.grid(row = 12, column = 1)
 var8 = IntVar()
-ND3 = Checkbutton(root, text='ND20A',variable=var8, onvalue=1, offvalue=0)
+ND3 = Checkbutton(root, text='ND20A',variable=var8, onvalue=1, offvalue=0, font=NORM_FONT)
 ND3.grid(row = 13, column = 1)
         
         #Pulse ID
 label7 = Label(root, text="Pulse ID:", font=NORM_FONT)
 label7.grid(row = 9, column = 0)
 var9 = StringVar()
-ID = Entry(root,textvariable=var9)
+ID = Entry(root,textvariable=var9, font=NORM_FONT)
 ID.grid(row = 9, column = 1)
 ID.insert(0,initialization[9])
         
@@ -495,7 +506,7 @@ ID.insert(0,initialization[9])
 label8 = Label(root, text="Inserted reactivity [$]:", font=NORM_FONT)
 label8.grid(row = 10, column = 0)
 var10 = StringVar()
-IR = Entry(root,textvariable=var10)
+IR = Entry(root,textvariable=var10, font=NORM_FONT)
 IR.grid(row = 10, column = 1)
 IR.insert(0,initialization[10])
 
@@ -506,6 +517,7 @@ label9.grid(row = 3, column = 0)
 var11 = StringVar()
 var11.set(CHOPTIONS[0])
 w = OptionMenu(root, var11, *CHOPTIONS)
+w.config(font=NORM_FONT)
 w.grid(row = 3, column = 1)
 
         #Decimation
@@ -515,13 +527,14 @@ label10.grid(row = 15, column = 0)
 var12 = StringVar()
 var12.set(DECOPTIONS[5])
 DEC = OptionMenu(root, var12, *DECOPTIONS)
+DEC.config(font=NORM_FONT)
 DEC.grid(row = 15, column = 1)
 
         #Trigger level 
 label11 = Label(root, text="Trigger level [V]:", font=NORM_FONT)
 label11.grid(row = 16, column = 0)
 var13 = StringVar()
-TRL = Entry(root,textvariable=var13)
+TRL = Entry(root,textvariable=var13, font=NORM_FONT)
 TRL.grid(row = 16, column = 1)
 TRL.insert(0,initialization[12])
 
@@ -529,7 +542,7 @@ TRL.insert(0,initialization[12])
 label12 = Label(root, text="Trigger delay [Samples]:", font=NORM_FONT)
 label12.grid(row = 17, column = 0)
 var14 = StringVar()
-TRD = Entry(root,textvariable=var14)
+TRD = Entry(root,textvariable=var14, font=NORM_FONT)
 TRD.grid(row = 17, column = 1)
 TRD.insert(0,initialization[13])
 
@@ -546,12 +559,12 @@ dot=canvas.create_oval(15,15,30,30, fill="red")
 #-----------------------------------------------------------------  
 #Initializatio      
 button4 = Button(root, text="Initialize",
-                    command=lambda: [init_measurement(var1,var2,var3,var4,var5,var11)])
-button4.grid(row = 7, column = 0, columnspan=2)
+                    command=lambda: [init_measurement(var1,var2,var3,var4,var5,var11)], font=NORM_FONT)
+button4.grid(row = 7, column = 0, columnspan=2, padx = 10, pady = 10)
 #Measurement
 button5 = Button(root, text="Measure",
-                    command=lambda: [[start_measurement(var6,var7,var8,var9,var10,var12,var13,var14)]], state=DISABLED)
-button5.grid(row = 19, column = 0, columnspan=2)
+                    command=lambda: [[start_measurement(var6,var7,var8,var9,var10,var12,var13,var14)]], state=DISABLED, font=NORM_FONT)
+button5.grid(row = 19, column = 0, columnspan=2, padx = 10, pady = 10)
 
 #print(initialization) 
 
@@ -559,9 +572,8 @@ button5.grid(row = 19, column = 0, columnspan=2)
 #-----------------------------------------------------------------
 label13 = Label(root, text="Terminal:", font=LARGE_FONT)
 label13.grid(row = 12, column = 2)
-T = Text(root, height = 10, width = 52)
-T.grid(row = 13,column = 2,rowspan=8, padx = 10)
+T = Text(root, height = 10, width = 52, font=NORM_FONT)
+T.grid(row = 13,column = 2,rowspan=8, padx = 10, pady = 10)
 T.insert(END, "Welcome to Cherenkov Pulse Recorder\n")
-
 # Execute Tkinter
 root.mainloop()

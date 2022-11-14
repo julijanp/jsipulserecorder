@@ -136,12 +136,16 @@ def pulse_record_test():
     
     #ND filter selection storage
     ND_filter="noND"
+    ND_filter_T=100
     if initialization[6]=="1":
         ND_filter = "ND06A"
+        ND_filter_T = 25
     elif initialization[7]=="1":
         ND_filter = "ND10A"
+        ND_filter_T = 10
     elif initialization[8]=="1":
         ND_filter = "ND20A"
+        ND_filter_T = 1
     
     #print(ND_filter)
     
@@ -150,7 +154,7 @@ def pulse_record_test():
     date_string = datenow.strftime('%d_%m_%Y')
     fileNameP="recorded_pulses_"+date_string+".csv"
     fileP = open(fileNameP, "a")
-    fileP.write(pulse_ID+","+pulse_IR+","+decimation+","+trigger_level+","+trigger_delay+","+ND_filter)
+    fileP.write(pulse_ID+","+pulse_IR+","+decimation+","+trigger_level+","+trigger_delay+","+ND_filter+","+ND_filter_T)
     fileP.close()
     
     #file creation
@@ -285,7 +289,7 @@ def pulse_record_test():
     label100.grid(row = 1, column = 0, pady = 2)
     label101 = Label(window, text="Signal peak: "+str(maximum)+" V", font=NORM_FONT)
     label101.grid(row = 2, column = 0, pady = 2)
-    label102 = Label(window, text="FWHM: "+str(*results_half[0]*dt)+" s", font=NORM_FONT)
+    label102 = Label(window, text="FWHM: "+str(fwhm)+" s", font=NORM_FONT)
     label102.grid(row = 3, column = 0, pady = 2)
     label103 = Label(window, text="Energy released: "+str(RE)+" a.u.", font=NORM_FONT)
     label103.grid(row = 4, column = 0, pady = 2)
@@ -569,6 +573,6 @@ label13 = Label(root, text="Terminal:", font=LARGE_FONT)
 label13.grid(row = 12, column = 2)
 T = Text(root, height = 10, width = 52, font=NORM_FONT)
 T.grid(row = 13,column = 2,rowspan=8, padx = 10, pady = 10)
-
+T.insert(END, "Welcome to Cherenkov Pulse Recorder\n")
 # Execute Tkinter
 root.mainloop()
