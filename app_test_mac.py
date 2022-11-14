@@ -241,6 +241,7 @@ def pulse_record_test():
     dt=stop_time/buffer_length
     fwhm=results_half[0]*dt
     print("FWHM: "+str(fwhm)+" s")
+    
     #integral
     a=1000
     RE=np.trapz(signal[(maximumind-a):(maximumind+a)],dx=dt)
@@ -249,6 +250,7 @@ def pulse_record_test():
     fileP = open(fileNameP, "a")
     fileP.write(","+str(maximum)+","+str(fwhm)+","+str(RE)+"\n")
     fileP.close()
+    
     #--------------------------------------------------------------------------------------------------------------------------------------
     ## New window with results
     #--------------------------------------------------------------------------------------------------------------------------------------
