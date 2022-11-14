@@ -150,7 +150,8 @@ def pulse_record_test():
     date_string = datenow.strftime('%d_%m_%Y')
     fileNameP="recorded_pulses_"+date_string+".csv"
     fileP = open(fileNameP, "a")
-    fileP.write(pulse_ID+","+pulse_IR+","+decimation+","+trigger_level+","+trigger_delay+","+ND_filter+"\n")
+    fileP.write(pulse_ID+","+pulse_IR+","+decimation+","+trigger_level+","+trigger_delay+","+ND_filter)
+    fileP.close()
     
     #file creation
     fileName= "pulse_"+str(numberOfPulses)+".csv"  #name of the CSV file generated
@@ -238,13 +239,16 @@ def pulse_record_test():
     #FWHM
     results_half = peak_widths(buff, maximuminda, rel_height=0.5)
     dt=stop_time/buffer_length
-    print("FWHM: "+str(*results_half[0]*dt)+" s")
+    fwhm=results_half[0]*dt
+    print("FWHM: "+str(fwhm)+" s")
     #integral
     a=1000
     RE=np.trapz(signal[(maximumind-a):(maximumind+a)],dx=dt)
     print("Released energy: "+str(RE)+" a.u.")
     #measurement_on()
-    
+    fileP = open(fileNameP, "a")
+    fileP.write(","+str(maximum)+","+str(fwhm)+","+str(RE)+"\n")
+    fileP.close()
     #--------------------------------------------------------------------------------------------------------------------------------------
     ## New window with results
     #--------------------------------------------------------------------------------------------------------------------------------------
