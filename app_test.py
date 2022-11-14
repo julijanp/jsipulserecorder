@@ -30,7 +30,7 @@ DECOPTIONS = [
 "1024",
 "8192",
 "65536",
-"80000"
+"131072"
 ] 
 
 global initialization
