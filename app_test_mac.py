@@ -4,7 +4,7 @@ from PIL import ImageTk, Image
 import os.path
 import sys
 import redpitaya_scpi as scpi
-import matplotlib.pyplot as plot
+import pandas as pd
 import time
 import csv
 import numpy as np
@@ -54,7 +54,7 @@ def init_measurement(IP1,P1,V1,h1,B1,CH):
     T.insert(END,"SiPM BIAS:"+initialization[5]+"V"+ "\n")
     T.insert(END,"-------------------------------------"+"\n")
     T.see(END)   
-    #print("Redpitaya IP adress:"+initialization[0])
+    print("Redpitaya IP adress:"+initialization[0])
     #print("Measurement possition:"+initialization[1])
     #print("Measurement channel:"+initialization[2])
     #print("Water volume:"+initialization[3]+"dl")
@@ -118,7 +118,7 @@ def start_measurement(ND11,ND21,ND31,ID1,IR1,DEC1,TRL1,TRD1):
     #TRL.config(state=DISABLED)
     #TRD.config(state=DISABLED)
     #printinit()  
-    pulse_record()
+    pulse_record_test()
     
     
 # Pulse record function (starts after measure button is pressed)    
@@ -136,16 +136,16 @@ def pulse_record_test():
     
     #ND filter selection storage
     ND_filter="noND"
-    ND_filter_T=100
+    ND_filter_T="100"
     if initialization[6]=="1":
         ND_filter = "ND06A"
-        ND_filter_T = 25
+        ND_filter_T = "25"
     elif initialization[7]=="1":
         ND_filter = "ND10A"
-        ND_filter_T = 10
+        ND_filter_T = "10"
     elif initialization[8]=="1":
         ND_filter = "ND20A"
-        ND_filter_T = 1
+        ND_filter_T = "1"
     
     #print(ND_filter)
     
@@ -193,6 +193,22 @@ def pulse_record_test():
     ID.insert(0,initialization[9])
     #redpitaya initialization
     rp_s = scpi.scpi(initialization[0])
+
+    #signal generation RPI (IN and OUT)
+    wave_form = 'sine'
+    freq = 0.1
+    ampl = 0.7
+
+    rp_s.tx_txt('GEN:RST')
+
+    rp_s.tx_txt('SOUR1:FUNC ' + str(wave_form).upper())
+    rp_s.tx_txt('SOUR1:FREQ:FIX ' + str(freq))
+    rp_s.tx_txt('SOUR1:VOLT ' + str(ampl))
+
+    # Enable output
+    rp_s.tx_txt('OUTPUT1:STATE ON')
+    rp_s.tx_txt('SOUR1:TRIG:INT')
+
     rp_s.tx_txt('ACQ:RST')
 
 
@@ -212,12 +228,12 @@ def pulse_record_test():
 
     print('Ready')
 
-    #while 1:
-    #    rp_s.tx_txt('ACQ:TRIG:STAT?')
+    while 1:
+        rp_s.tx_txt('ACQ:TRIG:STAT?')
         #print('Waiting')
-    #    if rp_s.rx_txt() == 'TD':
-    #        print('TRIGGERED')
-    #        break
+        if rp_s.rx_txt() == 'TD':
+            print('TRIGGERED')
+            break
 
     rp_s.tx_txt('ACQ:SOUR1:DATA?') #reading buffer
     buff_string = rp_s.rx_txt()
@@ -231,9 +247,6 @@ def pulse_record_test():
 
     #pulse analysis
 
-    #peaks, _ =find_peaks(buff,height=0.11,width=100)
-    #print(peaks)
-
     #peak
     signal=np.asarray(buff)
     maximum=max(buff)
@@ -243,7 +256,7 @@ def pulse_record_test():
     #FWHM
     results_half = peak_widths(buff, maximuminda, rel_height=0.5)
     dt=stop_time/buffer_length
-    fwhm=results_half[0]*dt
+    fwhm=float(results_half[0]*dt)
     print("FWHM: "+str(fwhm)+" s")
     
     #integral
@@ -400,13 +413,68 @@ def pulse_record():
     label102 = Label(window, text="FWHM: "+trigger_level+" s", font=NORM_FONT)
     label102.grid(row = 3, column = 0, pady = 2)
     label103 = Label(window, text="Energy released: "+trigger_level+" a.u.", font=NORM_FONT)
-    label103.grid(row = 4, column = 0, pady = 2)    
-    
+    label103.grid(row = 4, column = 0, pady = 2)
+
+
     
 # create root window
 def measurement_on():
     button5.config(state=NORMAL) #measurement button enabled
     canvas.itemconfig(dot, fill='red') #measurement light
+
+def analysis():
+    # --------------------------------------------------------------------------------------------------------------------------------------
+    ## New window with results
+    # --------------------------------------------------------------------------------------------------------------------------------------
+    window_ana = Toplevel(root)
+    window_ana.title('Pulse analysis')
+    #window_ana.geometry('800x' + str(root.winfo_height()) + '+' + str(root.winfo_width() + 10) + '+30')
+    window_ana.minsize(500, 500)
+    # the figure that will contain the plot
+    fig_ana = Figure(figsize=(12, 10),
+                 dpi=100)
+
+    # pulse data
+    datenow = datetime.datetime.now()
+    date_string = datenow.strftime('%d_%m_%Y')
+    fileNameP = "recorded_pulses_" + date_string + ".csv"
+    pulse_data = pd.read_csv(fileNameP, header=None)
+    #print(pulse_data)
+
+    inserted_reactivity_2 = (pulse_data.iloc[:, 1] - 1) ** 2
+    inserted_reactivity_inv = 1 / (pulse_data.iloc[:, 1] - 1)
+    inserted_reactivity = pulse_data.iloc[:, 1] - 1
+
+    U_peak=(pulse_data.iloc[:,7])*(100/pulse_data.iloc[:,6])
+
+
+    # adding the subplot
+    plot1 = fig_ana.add_subplot(311, frameon=True)
+    plot2 = fig_ana.add_subplot(312, frameon=True)
+    plot3 = fig_ana.add_subplot(313, frameon=True)
+
+    # plotting the graph
+    plot1.scatter(inserted_reactivity_2,U_peak)
+    plot1.set_ylabel("U_peak [V]")
+    plot1.set_xlabel("(\u03C1-\u03B2)^2 [$^2]")
+
+    plot2.scatter(inserted_reactivity_inv, pulse_data.iloc[:, 8])
+    plot2.set_ylabel("FWHM [s]")
+    plot2.set_xlabel("1/(\u03C1-\u03B2) [1/$]")
+
+    plot3.scatter(inserted_reactivity, pulse_data.iloc[:, 9])
+    plot3.set_ylabel("E_rel a.u.")
+    plot3.set_xlabel("(\u03C1-\u03B2) [$]")
+
+    # creating the Tkinter canvas
+    # containing the Matplotlib figure
+    canvas_ana = FigureCanvasTkAgg(fig_ana,
+                               master=window_ana)
+    # canvas.draw()
+
+    # placing the widgets on the Tkinter window
+    canvas_ana.get_tk_widget().grid(row=0, column=0, padx=10, pady=10)
+
     
 root = Tk()
 
@@ -426,6 +494,7 @@ menu.add_separator()
 item.add_command(label="Exit", command=quit)
 menu.add_cascade(label='File', menu=item)
 root.config(menu=menu)
+
 
 
 #filemenu.add_command(label="Settings", command= lambda: popupmsg("Not supported yet"))
@@ -564,6 +633,10 @@ button4.grid(row = 7, column = 0, columnspan=2, padx = 10, pady = 10)
 button5 = Button(root, text="Measure",
                     command=lambda: [[start_measurement(var6,var7,var8,var9,var10,var12,var13,var14)]], state=DISABLED, font=NORM_FONT)
 button5.grid(row = 19, column = 0, columnspan=2, padx = 10, pady = 10)
+
+button6 = Button(root, text="Analysis",
+                    command=lambda: [[analysis()]], font=NORM_FONT)
+button6.grid(row = 20, column = 0, columnspan=2, padx = 10, pady = 10)
 
 #print(initialization) 
 
