@@ -133,7 +133,7 @@ def pulse_record_test():
     pulse_ID=initialization[9] #pulse ID
     pulse_IR=initialization[10] #instrted reactivity
     measurement_channel=initialization[2] #redpitaya measurement channel
-    
+    print(trigger_delay)
     #ND filter selection storage
     ND_filter="noND"
     ND_filter_T="100"
@@ -185,7 +185,7 @@ def pulse_record_test():
     sampling_rate=125000000 #redpitaya 125*10^6 S/s
     decimation_redpitaya=int(decimation)
     stop_time=(decimation_redpitaya/sampling_rate)*buffer_length
-    #print(stop_time)
+    print(stop_time)
 
     t=np.linspace(start=0,stop=stop_time,num=16384)
     initialization[9]=str(int(numberOfPulses)+1)
@@ -224,7 +224,7 @@ def pulse_record_test():
 
     rp_s.tx_txt('ACQ:START')
 
-    time.sleep(stop_time+0.5)  #flushing the buffer (waiting for new measurements)
+    time.sleep(stop_time+1)  #flushing the buffer (waiting for new measurements)
 
     print('Ready')
 
@@ -430,8 +430,12 @@ def analysis():
     window_ana.title('Pulse analysis')
     #window_ana.geometry('800x' + str(root.winfo_height()) + '+' + str(root.winfo_width() + 10) + '+30')
     window_ana.minsize(500, 500)
+
+    #title#
+    label15 = Label(window_ana, text="Fired pulses parameters", font=LARGE_FONT)
+    label15.grid(row=0, column=0, pady=0)
     # the figure that will contain the plot
-    fig_ana = Figure(figsize=(12, 10),
+    fig_ana = Figure(figsize=(10, 10),
                  dpi=100)
 
     # pulse data
@@ -447,11 +451,12 @@ def analysis():
 
     U_peak=(pulse_data.iloc[:,7])*(100/pulse_data.iloc[:,6])
 
+    #fig_ana.suptitle("Recorded pulses parameters")
 
     # adding the subplot
-    plot1 = fig_ana.add_subplot(311, frameon=True)
-    plot2 = fig_ana.add_subplot(312, frameon=True)
-    plot3 = fig_ana.add_subplot(313, frameon=True)
+    plot1 = fig_ana.add_subplot(311)
+    plot2 = fig_ana.add_subplot(312)
+    plot3 = fig_ana.add_subplot(313)
 
     # plotting the graph
     plot1.scatter(inserted_reactivity_2,U_peak)
@@ -466,6 +471,12 @@ def analysis():
     plot3.set_ylabel("E_rel a.u.")
     plot3.set_xlabel("(\u03C1-\u03B2) [$]")
 
+    #fig_ana.subplots_adjust(left=0.1,
+    #                    bottom=0.1,
+    #                    right=0.9,
+    #                    top=0.9,
+    #                    wspace=0.4,
+    #                    hspace=0.4)
     # creating the Tkinter canvas
     # containing the Matplotlib figure
     canvas_ana = FigureCanvasTkAgg(fig_ana,
@@ -473,7 +484,7 @@ def analysis():
     # canvas.draw()
 
     # placing the widgets on the Tkinter window
-    canvas_ana.get_tk_widget().grid(row=0, column=0, padx=10, pady=10)
+    canvas_ana.get_tk_widget().grid(row=1, column=0, padx=10, pady=0)
 
     
 root = Tk()
@@ -483,6 +494,7 @@ root.title("Cherenkov pulse recorder")
 # Set geometry(widthxheight)
 #root.geometry('1150x800')
 root.minsize(500, 500)
+
 
 # adding menu bar in root window
 # new item in menu bar labelled as 'New'
