@@ -15,5 +15,6 @@ Project is created with:
 	
 ## Setup
 To run this project, copy repository to your computer and start it with:
-
-$python3 app_test_mac.py
+```
+$ python3 app_test_mac.py
+```
