@@ -2,7 +2,7 @@
 Intention: Pulse testing
 Sensor: Ketek Sipm PM3315
 Amplifire: ThorLabs AMP220
-ND Filter: ThorLabs ND06A
+ND Filter: ThorLabs ND10A
 Water volume: 7.0dl
 Data acquisition: Redpitaya STEMlab 125-14
 Redpitaya decimation:65536
