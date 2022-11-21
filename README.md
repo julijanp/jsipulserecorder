@@ -19,7 +19,7 @@ Project is created with:
 * SciPy
 	
 ## Setup
-To run this project, copy repository to your computer and start it with:
+To run this project, copy the repository to your computer and start it with:
 ```
 $ python3 app_test_mac.py
 ```
