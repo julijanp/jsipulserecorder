@@ -11,15 +11,9 @@ The Cherenkov Pulse Recorder is based on a closed tube in order to avoid interfe
 
 ## Technologies
 Project is created with:
-* Lorem version: 12.3
-* Ipsum version: 2.33
-* Ament library version: 999
+* Python 3.8
 	
 ## Setup
-To run this project, install it locally using npm:
+To run this project, copy repository to your computer and start it with:
 
-```
-$ cd ../lorem
-$ npm install
-$ npm start
-```
+$python3 app_test_mac.py
