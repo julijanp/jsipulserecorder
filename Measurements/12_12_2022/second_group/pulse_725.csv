@@ -1,0 +1,15 @@
+---------------------------------
+Intention: Pulse testing
+Sensor: Ketek Sipm PM3315
+Amplifire: ThorLabs AMP220
+ND Filter: ThorLabs ND06A
+Water volume: 7.0dl
+Data acquisition: Redpitaya STEMlab 125-14
+Redpitaya decimation:65536
+Redpitaya trigger level:0.015
+Redpitaya trigger delay:7000
+Location: JSI TRIGA reactor (F6)
+Pulse ID: 725
+Date and time:12/12/2022 16:43:04
+---------------------------------
+Time,Voltage
