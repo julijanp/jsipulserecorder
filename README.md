@@ -1,12 +1,15 @@
-# JSI pulse recorder
-<p>
-<img src="logo_white.png" width=20% height=20%>
-<p/>
+
+
+# JSI Cherenkov pulse recorder
+
+<img align="right" width="30%" height="30%" src="logo_white.png" alt="JSI pulse recorder">
 
 ## Table of contents
 * [General info](#general-info)
 * [Technologies](#technologies)
 * [Setup](#setup)
+
+
 
 ## General info
 In most water-cooled nuclear reactors, except zero-power reactors, Cherenkov radiation is present. It is due to energetic charged particles traveling faster than the speed of light in a dielectric medium. In open pool reactors, Cherenkov radiation can be observed as a blue glow around the reactor core. Since the intensity of the Cherenkov light produced in the reactor cooling water is in principle proportional to the neutron flux during a reactor pulse, an alternative method to measure the time dependence of the reactor power based on Cherenkov light intensity measurements is implemented at the JSI TRIGA research reactor.
