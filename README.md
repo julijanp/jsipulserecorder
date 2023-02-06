@@ -1,5 +1,5 @@
 # JSI pulse recorder
-![Screenshot](logo.png)
+![Screenshot](logo_jpg.jpg)
 ## Table of contents
 * [General info](#general-info)
 * [Technologies](#technologies)
