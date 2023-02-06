@@ -10,7 +10,7 @@ In most water-cooled nuclear reactors, except zero-power reactors, Cherenkov rad
 The Cherenkov Pulse Recorder is based on a closed tube in order to avoid interference from external light sources and radiation damage experienced by optical fibers. The system consists of an aluminium tube with an inner diameter of 36 mm positioned in the reactor core periphery, containing 0.65 l of water (filling the height of the reactor core in the tube). The water serves as the source of Cherenkov radiation in the measurement system. The Cherenkov light intensity in the channel is measured by silicon photo multiplier (SiPM) based detector linked with Redpitaya data acquisition system. With the use of neutral-density filters (ND filters), located in front of the SiPM dynamic range of the detector, is adjusted.
 <p>
 <img src="fig4.png" width=50% height=50%>
-<figcaption> Your text </figcaption>
+<figcaption> Reactor power vs. time in pulse operation mode measured using the JSI Cherenkov pulse recorder </figcaption>
 <p/>
 
 ## Technologies
