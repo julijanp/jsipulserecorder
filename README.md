@@ -1,4 +1,7 @@
 # JSI pulse recorder
+<p>
+<img src="logo_white.png" width=50% height=50%>
+<p/>
 ## Table of contents
 * [General info](#general-info)
 * [Technologies](#technologies)
