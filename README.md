@@ -28,6 +28,6 @@ To run this project, copy the repository to your computer and start it with:
 $ python3 app_test_mac.py
 ```
 ## Links
-*[Testing a new exercise at the JSI TRIGA reactor - Cherenkov radiation-based power meter](https://www.eneep.org/news/testing-new-exercise-jsi-triga-reactor-cherenkov-radiation-based-power-meter/),
+* [Testing a new exercise at the JSI TRIGA reactor - Cherenkov radiation-based power meter](https://www.eneep.org/news/testing-new-exercise-jsi-triga-reactor-cherenkov-radiation-based-power-meter/),
 
-*[Reactor Pulse Operation for Nuclear Instrumentation Detector Testing – Preparation of a Dedicated Experimental Campaign at the JSI TRIGA Reactor](https://www.epj-conferences.org/articles/epjconf/pdf/2021/07/epjconf_animma2021_04019.pdf).
+* [Reactor Pulse Operation for Nuclear Instrumentation Detector Testing – Preparation of a Dedicated Experimental Campaign at the JSI TRIGA Reactor](https://www.epj-conferences.org/articles/epjconf/pdf/2021/07/epjconf_animma2021_04019.pdf).
